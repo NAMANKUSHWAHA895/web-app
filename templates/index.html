@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search It</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; background-color: #f4f4f4; }
+        .container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        input[type="text"] { width: 95%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        button { display: block; width: 100%; padding: 12px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; transition: background-color 0.2s ease; }
+        button:hover { background-color: #0056b3; }
+        .result { margin-top: 30px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 4px; background-color: #f9f9f9; }
+        .result h3 { margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        .error { color: #dc3545; font-weight: bold; margin-top: 15px; padding: 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; }
+        pre { white-space: pre-wrap; /* Allows text to wrap */ word-wrap: break-word; /* Breaks long words */ background-color: #eee; padding: 10px; border-radius: 4px; font-size: 0.95rem; }
+    </style>
+</head>
+
+
+
+
+<body>
+    <div class="container">
+        <h1>Ask Talky</h1>
+
+        <form method="POST" action="/">
+            <div class="form-group">
+                <label for="query">Whats Your Problem :</label>
+                <!-- Retain the query value after submission -->
+                <input type="text" id="query" name="query" value="{{ query if query else '' }}" required>
+            </div>
+            <button type="submit">Ask Talky</button>
+        </form>
+
+        <!-- Display Error if any -->
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <!-- Display Result if available -->
+        {% if result %}
+            <div class="result">
+                <h3>Your Query:</h3>
+                <p>{{ query }}</p> <!-- Display the original query -->
+                <h3>AI Response:</h3>
+                <!-- Use <pre> for better formatting of AI response -->
+                <pre>{{ result }}</pre>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
