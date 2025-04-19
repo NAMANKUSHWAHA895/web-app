@@ -3,54 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search It</title>
+    <title>Search It - Talky</title>
     <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; background-color: #f4f4f4; }
-        .container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        :root { /* Define animation durations for easier control */
+            --shooting-time: 3000ms;
+        }
+
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            line-height: 1.6;
+            /* 🌠 Spacey background */
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #c5c6c7;
+            position: relative; /* Needed for absolute/fixed positioning of stars */
+            /* REMOVED overflow: hidden; to allow scrolling */
+            /* We might need overflow-x: hidden; if stars cause horizontal scroll */
+             overflow-x: hidden; /* Let's try this to prevent horizontal scroll only */
+        }
+
+        /* --- Static Starfield --- */
+        #stars, #stars2, #stars3 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: transparent;
+            z-index: -2;
+            pointer-events: none;
+        }
+        #stars {
+            --star-color: #FFF;
+            --star-size: 1px;
+             box-shadow:
+                50vw 80vh var(--star-size) var(--star-size) var(--star-color), 10vw 30vh var(--star-size) var(--star-size) var(--star-color),
+                85vw 15vh var(--star-size) var(--star-size) var(--star-color), 30vw 90vh var(--star-size) var(--star-size) var(--star-color),
+                /* Add many more here */
+                 5vw 5vh 1px 1px #FFF, 40vw 40vh 1px 1px #FFF, 60vw 70vh 1px 1px #FFF, 90vw 20vh 1px 1px #FFF,
+                 15vw 75vh 1px 1px #FFF, 65vw 5vh 1px 1px #FFF, 35vw 50vh 1px 1px #FFF, 80vw 95vh 1px 1px #FFF;
+        }
+        #stars2 {
+            --star-color: #EEE;
+            --star-size: 2px;
+            z-index: -3;
+             box-shadow:
+                75vw 50vh var(--star-size) var(--star-size) var(--star-color), 25vw 60vh var(--star-size) var(--star-size) var(--star-color),
+                95vw 85vh var(--star-size) var(--star-size) var(--star-color),
+                /* Add many more here */
+                 45vw 25vh 2px 2px #EEE, 5vw 90vh 2px 2px #EEE, 80vw 10vh 2px 2px #EEE;
+            animation: twinkle 10s infinite alternate;
+        }
+         #stars3 {
+            --star-color: #DDD;
+            --star-size: 1px;
+             z-index: -4;
+            box-shadow:
+                 5vw 5vh var(--star-size) var(--star-size) var(--star-color), 40vw 40vh var(--star-size) var(--star-size) var(--star-color),
+                 60vw 70vh var(--star-size) var(--star-size) var(--star-color),
+                /* Add many more here */
+                 20vw 15vh 1px 1px #DDD, 70vw 80vh 1px 1px #DDD, 50vw 35vh 1px 1px #DDD, 98vw 55vh 1px 1px #DDD;
+        }
+        @keyframes twinkle { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
+
+        /* --- Shooting Stars (Styled Meteors) --- */
+        .shooting-star {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(to right, #FFF, rgba(255, 255, 255, 0));
+            border-radius: 50%;
+            filter: drop-shadow(0 0 6px #FFF);
+            opacity: 0;
+            transform: rotate(-30deg) translateX(0);
+            animation: shoot var(--shooting-time) ease-out infinite;
+            z-index: -1;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        @keyframes shoot {
+            0% { opacity: 0; transform: rotate(-30deg) translateX(-50vw); } /* Start further left */
+            10% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: rotate(-30deg) translateX(110vw); } /* End further right */
+        }
+        .shooting-star:nth-child(1) { top: 10%; left: -50%; animation-delay: 1500ms; animation-duration: calc(var(--shooting-time) * 0.9); }
+        .shooting-star:nth-child(2) { top: 30%; left: -50%; animation-delay: 500ms; animation-duration: calc(var(--shooting-time) * 1.1); width: 100px; }
+        .shooting-star:nth-child(3) { top: 60%; left: -50%; animation-delay: 3000ms; animation-duration: var(--shooting-time); height: 2px; filter: drop-shadow(0 0 8px #FFF); }
+        .shooting-star:nth-child(4) { top: 80%; left: -50%; animation-delay: 4200ms; animation-duration: calc(var(--shooting-time) * 1.2); }
+        .shooting-star:nth-child(5) { top: 45%; left: -50%; animation-delay: 6000ms; animation-duration: calc(var(--shooting-time) * 0.8); width: 60px; }
+
+        /* --- Container and Content --- */
+        .container-wrapper {
+             padding: 40px 20px;
+             position: relative;
+             z-index: 1;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            margin: 0 auto;
+            color: #333;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ... (Rest of your existing styles for h1, form, result, error, pre, footer remain unchanged) ... */
         h1 { color: #333; text-align: center; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input[type="text"] { width: 95%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        input[type="text"] { width: 95%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; color: #333; background-color: #fff; }
         button { display: block; width: 100%; padding: 12px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; transition: background-color 0.2s ease; }
         button:hover { background-color: #0056b3; }
         .result { margin-top: 30px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 4px; background-color: #f9f9f9; }
         .result h3 { margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
         .error { color: #dc3545; font-weight: bold; margin-top: 15px; padding: 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; }
-        pre { white-space: pre-wrap; /* Allows text to wrap */ word-wrap: break-word; /* Breaks long words */ background-color: #eee; padding: 10px; border-radius: 4px; font-size: 0.95rem; }
+        pre { white-space: pre-wrap; word-wrap: break-word; background-color: #e9ecef; padding: 15px; border-radius: 4px; font-size: 0.95rem; color: #333; }
+        footer { text-align: center; margin-top: 40px; padding: 20px 0; color: #aaa; font-size: 0.9em; position: relative; z-index: 1; }
+    
     </style>
 </head>
-
-
-
-
 <body>
-    <div class="container">
-        <h1>Ask Talky</h1>
 
-        <form method="POST" action="/">
-            <div class="form-group">
-                <label for="query">Whats Your Problem :</label>
-                <!-- Retain the query value after submission -->
-                <input type="text" id="query" name="query" value="{{ query if query else '' }}" required>
-            </div>
-            <button type="submit">Ask Talky</button>
-        </form>
+    <!-- 🌠 Static Star Fields -->
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>
 
-        <!-- Display Error if any -->
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
+    <!-- 🌠 Shooting Stars -->
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
 
-        <!-- Display Result if available -->
-        {% if result %}
-            <div class="result">
-                <h3>Your Query:</h3>
-                <p>{{ query }}</p> <!-- Display the original query -->
-                <h3>AI Response:</h3>
-                <!-- Use <pre> for better formatting of AI response -->
-                <pre>{{ result }}</pre>
-            </div>
-        {% endif %}
+    <div class="container-wrapper">
+        <div class="container">
+            <h1>Ask Talky AI  </h1><h6  style="text-align: center;">by Naman Kushwaha</h6>
+
+                        <form method="POST" action="/">
+                <div class="form-group">
+                    <label for="query">Whats Your Problem :</label>
+                    <input type="text" id="query" name="query" value="{{ query if query else '' }}" required>
+                </div>
+                <button type="submit">Ask Talky</button>
+            </form>
+            {% if error %} <p class="error">{{ error }}</p> {% endif %}
+            {% if result %}
+                <div class="result">
+                    <h3>Your Query:</h3> <p>{{ query }}</p>
+                    <h3>AI Response:</h3> <pre>{{ result }}</pre>
+                </div>
+            {% endif %}
+        </div>
     </div>
+
+    <footer>
+        © 2025 namankushwaha | Made by Naman Kushwaha
+    </footer>
+
 </body>
 </html>
